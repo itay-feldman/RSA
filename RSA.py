@@ -20,9 +20,10 @@ def generate_prime(size=1024, num_of_tries=100, max_tries=10):
     :return: Either a probable prime (most cases) or a false if it couldn't generate a prime in the amount of tries
              tries specified
     """
-    print 'Started generation...'
+    assert size % 8 == 0, "Size is not byte multiple (mod 8)"
+    print('Started generation...')
 
-    x = int(os.urandom(size/8).encode('hex'), 16)
+    x = int.from_bytes(os.urandom(size//8))
     if x % 2 == 0:
         x += 1
         # Added one to make odd...
@@ -33,21 +34,21 @@ def generate_prime(size=1024, num_of_tries=100, max_tries=10):
         return num
 
     count = 0
-    for _ in xrange(max_tries):
+    for _ in range(max_tries):
         x = get_prime(x)
-        print 'Final primality check...'
+        print('Final primality check...')
         if fermat_primality_test(x, num_of_tries) and miller_rabin_test(x, num_of_tries):
             # Got sufficient probability of primality
             break
         else:
             count += 1
-            print 'Check failed... Trying another prime. %s more times to run.' % (max_tries - count)
+            print(f'Check failed... Trying another prime. {max_tries - count} more times to run.')
     if count == max_tries:
         if not fermat_primality_test(x, 100):
             return False  # This means the for loop ran the maximal amount of times so we check if the last run got a
             # prime by chance and it should be tested, if it wasn't prime the function is done and didn't get a prime
             # so it returns 'False'.
-    print 'Got a Prime!'
+    print('Got a Prime!')
     return x
 
 
@@ -58,7 +59,7 @@ def fermat_primality_test(prime, num_of_tries):
     :param num_of_tries:
     :return:
     """
-    for _ in xrange(num_of_tries):
+    for _ in range(num_of_tries):
         # Get base of power
         a = random.randint(0, prime - 2)
         if not fermat_theorem(a, prime):
@@ -83,8 +84,8 @@ def miller_rabin_test(prime, num_of_tries=100):
     """
     Runs the Miller-Rabin primality test
     :param prime: Number to test primality of
-    :param num_of_tries: Amount of times to run the test, higher means higher probabilty of primality
-    :return: False if not prime (100% probabilty) or True if probably a prime
+    :param num_of_tries: Amount of times to run the test, higher means higher probability of primality
+    :return: False if not prime (100% probability) or True if probably a prime
     """
     if prime == 2:
         return True
@@ -93,7 +94,7 @@ def miller_rabin_test(prime, num_of_tries=100):
     if prime == 1:
         return False  # One isn't prime...
     r, d = get_miller_rabin_components(prime - 1)
-    for _ in xrange(num_of_tries):
+    for _ in range(num_of_tries):
         if not miller_rabin_calc(d, r, prime):
             return False
     return True
@@ -111,7 +112,7 @@ def miller_rabin_calc(d, r, n):
     x = pow(a, d, n)
     if x == 1 or x == n - 1:
         return True
-    for _ in xrange(r-1):
+    for _ in range(r-1):
         x = pow(x, 2, n)
         if x == n-1:
             return True
@@ -125,7 +126,7 @@ def get_miller_rabin_components(num):
     :return: Tuple comprised out of (r, d).
     """
     if num % 2 == 0:
-        to_ret = get_miller_rabin_components(num / 2)
+        to_ret = get_miller_rabin_components(num // 2)
         return to_ret[0]+1, to_ret[1]
     # if got here then we have reached the "odd root" of the number
     return 0, num
@@ -154,29 +155,29 @@ def euler_totient_function(q, p):
     return (p - 1) * (q - 1)
 
 
-def generate_keys(key_size=2048, location='keys\\'):
+def generate_keys(key_size=2048, location=None):
     """
     Generate RSA private and public key pairs
     :param location: Where to save the keys in PEM format
     :param key_size: Size of the key in bits
     :return: public key, private key
     """
-    p = generate_prime(key_size/2)
-    q = generate_prime(key_size/2)
+    p = generate_prime(key_size//2)
+    q = generate_prime(key_size//2)
     n = q * p
     phi_n = euler_totient_function(q, p)
     e = 65537
     if not (e < phi_n and gcd(e, phi_n) == 1 and gcd(e, n) == 1):
         e = 257
         if not (e < phi_n and gcd(e, phi_n) == 1):
-            print 'Failed to pick a suitable public exponent, needs implementation'
+            print('Failed to pick a suitable public exponent, needs implementation')
             return ''
     d = multiplicative_inverse(e, phi_n)
     public_key = (e, n)
     private_key = (d, n)
-    # location = 'c:\keys'  # temp
-    format_pem(public_key, location, True)
-    format_pem(private_key, location, False)
+    if location:
+        format_pem(public_key, location, True)
+        format_pem(private_key, location, False)
     return public_key, private_key
 
 
@@ -187,11 +188,11 @@ def multiplicative_inverse(e, phi):
     :param phi: Euler's totient function for the modulus n
     :return: The multiplicative inverse (i.e d, the private modulus)
     """
-    t, newt, r, newr = 0, 1, phi, e
-    while newr != 0:
-        quotient = r / newr
-        t, newt = newt, t - quotient * newt
-        r, newr = newr, r - quotient * newr
+    t, new_t, r, new_r = 0, 1, phi, e
+    while new_r != 0:
+        quotient = r // new_r
+        t, new_t = new_t, t - quotient * new_t
+        r, new_r = new_r, r - quotient * new_r
     if r > 1:
         return False
     if t < 0:
@@ -215,7 +216,7 @@ def format_pem(key, location, is_public):
     n_part = integer + length_part(n) + n
     exponent_part = integer + length_part(exponent) + exponent
     to_save = sequence + length_part(n_part + exponent_part) + n_part + exponent_part
-    to_save = base64.b64encode(to_save)
+    to_save = base64.b64encode(to_save.encode())
     if not os.path.exists(location):
         os.mkdir(location)
     if is_public:
@@ -254,7 +255,7 @@ def length_part(hex_num):
     extra_bytes = '80'
     length = len(textwrap.wrap(hex_num, 2))
     if needs_more_bytes(hex_num):
-        extra_bytes = clean_hex(int(extra_bytes, 16) + length/255 + 1 * (length % 255 != 0)) + clean_hex(length)
+        extra_bytes = clean_hex(int(extra_bytes, 16) + length//255 + 1 * (length % 255 != 0)) + clean_hex(length)
     else:
         extra_bytes = clean_hex(length)
     return extra_bytes
@@ -280,8 +281,8 @@ def save_public_key(data, location):
     :param location: Where to save the .key file
     :return: None
     """
-    separated_pem = '\r\n'.join(textwrap.wrap(data, 64))
-    with open(location + 'public_key.key', 'wb+') as pubkey:
+    separated_pem = '\r\n'.join(textwrap.wrap(data.decode(), 64))
+    with open(location + 'public_key.key', 'w') as pubkey:
         pubkey.write('-----BEGIN PUBLIC KEY-----\r\n' + separated_pem + '\r\n-----END PUBLIC KEY-----')
 
 
@@ -292,9 +293,9 @@ def save_private_key(data, location):
     :param location: Where to save the .key file
     :return: None
     """
-    separated_pem = '\r\n'.join(textwrap.wrap(data, 64))
-    with open(location + 'private_key.key', 'wb+') as pkey:
-        pkey.write('-----BEGIN PRIVATE KEY-----\r\n' + separated_pem + '\r\n-----END PRIVATE KEY-----')
+    separated_pem = '\r\n'.join(textwrap.wrap(data.decode(), 64))
+    with open(location + 'private_key.key', 'w') as p_key:
+        p_key.write('-----BEGIN PRIVATE KEY-----\r\n' + separated_pem + '\r\n-----END PRIVATE KEY-----')
 
 
 def encrypt(message, key):
@@ -309,7 +310,7 @@ def encrypt(message, key):
     message = add_padding(message, modulus)
     # print 'padded', message
     message = pow(message, exponent, modulus)
-    return base64.b64encode(hex(message))
+    return base64.b64encode(hex(message).encode())
 
 
 def decrypt(message, key):
