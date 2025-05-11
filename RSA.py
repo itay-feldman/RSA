@@ -162,8 +162,8 @@ def generate_keys(key_size=2048, location='keys\\'):
     :param key_size: Size of the key in bits
     :return: public key, private key
     """
-    p = generate_prime(key_size/2)
-    q = generate_prime(key_size/2)
+    p = generate_prime(key_size//2)
+    q = generate_prime(key_size//2)
     n = q * p
     phi_n = euler_totient_function(q, p)
     e = 65537
@@ -190,7 +190,7 @@ def multiplicative_inverse(e, phi):
     """
     t, new_t, r, new_r = 0, 1, phi, e
     while new_r != 0:
-        quotient = r / new_r
+        quotient = r // new_r
         t, new_t = new_t, t - quotient * new_t
         r, new_r = new_r, r - quotient * new_r
     if r > 1:
@@ -216,7 +216,7 @@ def format_pem(key, location, is_public):
     n_part = integer + length_part(n) + n
     exponent_part = integer + length_part(exponent) + exponent
     to_save = sequence + length_part(n_part + exponent_part) + n_part + exponent_part
-    to_save = base64.b64encode(to_save)
+    to_save = base64.b64encode(to_save.encode())
     if not os.path.exists(location):
         os.mkdir(location)
     if is_public:
@@ -255,7 +255,7 @@ def length_part(hex_num):
     extra_bytes = '80'
     length = len(textwrap.wrap(hex_num, 2))
     if needs_more_bytes(hex_num):
-        extra_bytes = clean_hex(int(extra_bytes, 16) + length/255 + 1 * (length % 255 != 0)) + clean_hex(length)
+        extra_bytes = clean_hex(int(extra_bytes, 16) + length//255 + 1 * (length % 255 != 0)) + clean_hex(length)
     else:
         extra_bytes = clean_hex(length)
     return extra_bytes
@@ -281,8 +281,8 @@ def save_public_key(data, location):
     :param location: Where to save the .key file
     :return: None
     """
-    separated_pem = '\r\n'.join(textwrap.wrap(data, 64))
-    with open(location + 'public_key.key', 'wb+') as pubkey:
+    separated_pem = '\r\n'.join(textwrap.wrap(data.decode(), 64))
+    with open(location + 'public_key.key', 'w') as pubkey:
         pubkey.write('-----BEGIN PUBLIC KEY-----\r\n' + separated_pem + '\r\n-----END PUBLIC KEY-----')
 
 
@@ -293,8 +293,8 @@ def save_private_key(data, location):
     :param location: Where to save the .key file
     :return: None
     """
-    separated_pem = '\r\n'.join(textwrap.wrap(data, 64))
-    with open(location + 'private_key.key', 'wb+') as p_key:
+    separated_pem = '\r\n'.join(textwrap.wrap(data.decode(), 64))
+    with open(location + 'private_key.key', 'w') as p_key:
         p_key.write('-----BEGIN PRIVATE KEY-----\r\n' + separated_pem + '\r\n-----END PRIVATE KEY-----')
 
 
@@ -310,7 +310,7 @@ def encrypt(message, key):
     message = add_padding(message, modulus)
     # print 'padded', message
     message = pow(message, exponent, modulus)
-    return base64.b64encode(hex(message))
+    return base64.b64encode(hex(message).encode())
 
 
 def decrypt(message, key):
