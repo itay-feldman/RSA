@@ -155,7 +155,7 @@ def euler_totient_function(q, p):
     return (p - 1) * (q - 1)
 
 
-def generate_keys(key_size=2048, location='keys\\'):
+def generate_keys(key_size=2048, location=None):
     """
     Generate RSA private and public key pairs
     :param location: Where to save the keys in PEM format
@@ -175,9 +175,9 @@ def generate_keys(key_size=2048, location='keys\\'):
     d = multiplicative_inverse(e, phi_n)
     public_key = (e, n)
     private_key = (d, n)
-    # location = 'c:\keys'  # temp
-    format_pem(public_key, location, True)
-    format_pem(private_key, location, False)
+    if location:
+        format_pem(public_key, location, True)
+        format_pem(private_key, location, False)
     return public_key, private_key
 
 
