@@ -11,9 +11,9 @@ def main():
     start_time = timer()
     public, private = RSA.generate_keys('keys\\', key_size=1024)
     e_msg = RSA.encrypt('hello', public)
-    print e_msg
+    print(e_msg)
     d_msg = RSA.decrypt(e_msg, private)
-    print d_msg
+    print(d_msg)
     """
     prime1 = RSA.generate_prime(256)
     prime2 = RSA.generate_prime(256)
@@ -46,14 +46,14 @@ def main():
     # print socket_stuff(public, private, IP, PORT)
 
     elapsed_time = round(time.time() - start_time, 5)
-    print 'Done! Finished in [%ss]' % elapsed_time
+    print(f'Done! Finished in [{elapsed_time}]')
 
 
 def timer():
     start_time = time.time()
     now = datetime.datetime.now()
     current_time_hour = [str(now.hour), str(now.minute), str(now.second)]
-    print 'Started: [%s]' % ':'.join(current_time_hour)
+    print(f'Started: [{':'.join(current_time_hour)}]')
     return start_time
 
 
@@ -61,13 +61,13 @@ def socket_stuff(public, private, ip, port):
     server_sock = socket.socket()
     server_sock.bind((ip, port))
     server_sock.listen(5)
-    print 'Running...'
+    print('Running...')
     client_sock, client_address = server_sock.accept()
-    print client_sock.recv(1024)
+    print(client_sock.recv(1024))
     to_send_public = str(public[0]) + ',' + str(public[1])
     client_sock.send(to_send_public)
     encrypted_message = client_sock.recv(4096)
-    print encrypted_message
+    print(encrypted_message)
     decrypted = RSA.decrypt(encrypted_message, private)
     client_sock.send(decrypted)
     return decrypted

@@ -20,7 +20,7 @@ def generate_prime(size=1024, num_of_tries=100, max_tries=10):
     :return: Either a probable prime (most cases) or a false if it couldn't generate a prime in the amount of tries
              tries specified
     """
-    print 'Started generation...'
+    print('Started generation...')
 
     x = int(os.urandom(size/8).encode('hex'), 16)
     if x % 2 == 0:
@@ -33,21 +33,21 @@ def generate_prime(size=1024, num_of_tries=100, max_tries=10):
         return num
 
     count = 0
-    for _ in xrange(max_tries):
+    for _ in range(max_tries):
         x = get_prime(x)
-        print 'Final primality check...'
+        print('Final primality check...')
         if fermat_primality_test(x, num_of_tries) and miller_rabin_test(x, num_of_tries):
             # Got sufficient probability of primality
             break
         else:
             count += 1
-            print 'Check failed... Trying another prime. %s more times to run.' % (max_tries - count)
+            print(f'Check failed... Trying another prime. {max_tries - count} more times to run.')
     if count == max_tries:
         if not fermat_primality_test(x, 100):
             return False  # This means the for loop ran the maximal amount of times so we check if the last run got a
             # prime by chance and it should be tested, if it wasn't prime the function is done and didn't get a prime
             # so it returns 'False'.
-    print 'Got a Prime!'
+    print('Got a Prime!')
     return x
 
 
@@ -58,7 +58,7 @@ def fermat_primality_test(prime, num_of_tries):
     :param num_of_tries:
     :return:
     """
-    for _ in xrange(num_of_tries):
+    for _ in range(num_of_tries):
         # Get base of power
         a = random.randint(0, prime - 2)
         if not fermat_theorem(a, prime):
@@ -83,8 +83,8 @@ def miller_rabin_test(prime, num_of_tries=100):
     """
     Runs the Miller-Rabin primality test
     :param prime: Number to test primality of
-    :param num_of_tries: Amount of times to run the test, higher means higher probabilty of primality
-    :return: False if not prime (100% probabilty) or True if probably a prime
+    :param num_of_tries: Amount of times to run the test, higher means higher probability of primality
+    :return: False if not prime (100% probability) or True if probably a prime
     """
     if prime == 2:
         return True
@@ -93,7 +93,7 @@ def miller_rabin_test(prime, num_of_tries=100):
     if prime == 1:
         return False  # One isn't prime...
     r, d = get_miller_rabin_components(prime - 1)
-    for _ in xrange(num_of_tries):
+    for _ in range(num_of_tries):
         if not miller_rabin_calc(d, r, prime):
             return False
     return True
@@ -111,7 +111,7 @@ def miller_rabin_calc(d, r, n):
     x = pow(a, d, n)
     if x == 1 or x == n - 1:
         return True
-    for _ in xrange(r-1):
+    for _ in range(r-1):
         x = pow(x, 2, n)
         if x == n-1:
             return True
@@ -169,7 +169,7 @@ def generate_keys(key_size=2048, location='keys\\'):
     if not (e < phi_n and gcd(e, phi_n) == 1 and gcd(e, n) == 1):
         e = 257
         if not (e < phi_n and gcd(e, phi_n) == 1):
-            print 'Failed to pick a suitable public exponent, needs implementation'
+            print('Failed to pick a suitable public exponent, needs implementation')
             return ''
     d = multiplicative_inverse(e, phi_n)
     public_key = (e, n)
@@ -187,11 +187,11 @@ def multiplicative_inverse(e, phi):
     :param phi: Euler's totient function for the modulus n
     :return: The multiplicative inverse (i.e d, the private modulus)
     """
-    t, newt, r, newr = 0, 1, phi, e
-    while newr != 0:
-        quotient = r / newr
-        t, newt = newt, t - quotient * newt
-        r, newr = newr, r - quotient * newr
+    t, new_t, r, new_r = 0, 1, phi, e
+    while new_r != 0:
+        quotient = r / new_r
+        t, new_t = new_t, t - quotient * new_t
+        r, new_r = new_r, r - quotient * new_r
     if r > 1:
         return False
     if t < 0:
@@ -293,8 +293,8 @@ def save_private_key(data, location):
     :return: None
     """
     separated_pem = '\r\n'.join(textwrap.wrap(data, 64))
-    with open(location + 'private_key.key', 'wb+') as pkey:
-        pkey.write('-----BEGIN PRIVATE KEY-----\r\n' + separated_pem + '\r\n-----END PRIVATE KEY-----')
+    with open(location + 'private_key.key', 'wb+') as p_key:
+        p_key.write('-----BEGIN PRIVATE KEY-----\r\n' + separated_pem + '\r\n-----END PRIVATE KEY-----')
 
 
 def encrypt(message, key):
