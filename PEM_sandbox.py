@@ -5,7 +5,7 @@ import base64
 
 public_key, private_key = RSA.generate_keys('d:\keys\\')
 # public_key
-# print private_key
+# print(private_key)
 
 
 def format_pem(key, location, is_public):
@@ -63,17 +63,17 @@ def save_public_key(data, location):
 
 def save_private_key(data, location):
     separated_pem = '\r\n'.join(textwrap.wrap(data, 64))
-    with open(location + 'private_key.key', 'wb+') as pkey:
-        pkey.write('-----BEGIN PRIVATE KEY-----\r\n' + separated_pem + '\r\n-----END PRIVATE KEY-----')
+    with open(location + 'private_key.key', 'wb+') as p_key:
+        p_key.write('-----BEGIN PRIVATE KEY-----\r\n' + separated_pem + '\r\n-----END PRIVATE KEY-----')
 
 
 # format_pem(public_key, 'd:\keys\\', True)
 # format_pem(private_key, 'd:\keys\\', False)
-print public_key
-print private_key
+print(public_key)
+print(private_key)
 num = 6
-print 'before crypt', num
+print('before crypt', num)
 num = pow(num, public_key[0], public_key[1])
-print 'after encrypt', num
+print('after encrypt', num)
 num = pow(num, private_key[0], private_key[1])
-print 'after decrypt', num
+print('after decrypt', num)

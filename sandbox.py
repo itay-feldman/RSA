@@ -20,7 +20,7 @@ if should_loop:
 
 
 def fermat_primality_test(prime, num_of_tries):
-    for _ in xrange(num_of_tries):
+    for _ in range(num_of_tries):
         # Get base of power
         a = random.randint(0, prime - 2)
         if not fermat_theorem(a, prime):
@@ -46,7 +46,7 @@ def fermat_theorem(a, n):
 def pascal_triangle(n):
     """
     Calculates the values of the nth row of Pascal's triangle using the identity: C(n,k+1) = C(n,k) * (n-k) / (k+1)
-    :param n: Number of the row in Pascal's trianlge to be calculated
+    :param n: Number of the row in Pascal's triangle to be calculated
     :return:
     """
     line = [1]
@@ -70,18 +70,18 @@ def aks_test(n):
 
 def main():
     start_time = time.time()
-    print os.urandom(128)
-    print hex(12666666666666666666666666666666666666666666)
+    print(os.urandom(128))
+    print(hex(12666666666666666666666666666666666666666666))
 
-    print (os.path.dirname(__file__) + '/').replace('/', '\\')
+    print((os.path.dirname(__file__) + '/').replace('/', '\\'))
     msg = 'Shalom'
     msg_uni = msg.encode('utf-8')
-    print msg
-    print msg_uni
+    print(msg)
+    print(msg_uni)
     x = hex(20)
-    print x
-    print hex(int(x, 16) + 16)
-    print range(1, 34)
+    print(x)
+    print(hex(int(x, 16) + 16))
+    print(range(1, 34))
     number_of_bits = 4096
     """
     x = int(os.urandom(number_of_bits/8).encode('hex'), 16)
@@ -97,10 +97,10 @@ def main():
     print 'Generated number x is prime (last check):', fermat_primality_test(x, 200)
     """
     count = 1
-    for i in xrange(100000):
+    for i in range(100000):
         count += 1
     elapsed_time = round(time.time() - start_time, 5)
-    print 'Done! Finished in [%ss]' % elapsed_time
+    print(f'Done! Finished in [{elapsed_time}]')
 
 
 if __name__ == '__main__':

@@ -9,9 +9,9 @@ client_sock.connect((IP, PORT))
 client_sock.send('SEND PUBLIC KEY')
 public_key = client_sock.recv(4096).split(',')
 public_key = [int(x) for x in public_key]
-print public_key
-message = raw_input('Message:\n')
+print(public_key)
+message = input('Message:\n')
 encrypted_message = RSA.encrypt(message, public_key)
-print encrypted_message
+print(encrypted_message)
 client_sock.send(encrypted_message)
-print client_sock.recv(4096)
+print(client_sock.recv(4096))
