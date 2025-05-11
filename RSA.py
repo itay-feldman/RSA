@@ -20,9 +20,10 @@ def generate_prime(size=1024, num_of_tries=100, max_tries=10):
     :return: Either a probable prime (most cases) or a false if it couldn't generate a prime in the amount of tries
              tries specified
     """
+    assert size % 8 == 0, "Size is not byte multiple (mod 8)"
     print('Started generation...')
 
-    x = int(os.urandom(size/8).encode('hex'), 16)
+    x = int.from_bytes(os.urandom(size//8))
     if x % 2 == 0:
         x += 1
         # Added one to make odd...
@@ -125,7 +126,7 @@ def get_miller_rabin_components(num):
     :return: Tuple comprised out of (r, d).
     """
     if num % 2 == 0:
-        to_ret = get_miller_rabin_components(num / 2)
+        to_ret = get_miller_rabin_components(num // 2)
         return to_ret[0]+1, to_ret[1]
     # if got here then we have reached the "odd root" of the number
     return 0, num
